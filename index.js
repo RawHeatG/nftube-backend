@@ -1,11 +1,28 @@
 const express = require('express');
+var bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 
+app.use(bodyParser.json());
+app.use(cors());
+
+const { initializeDbConnection } = require('./database/initializeDbConnection');
+const { routeNotFound } = require('./middlewares/routeNotFound');
+const videosRouter = require("./routers/videos.router")
+
+//DO NOT MOVE, needs to be at top to establish connection before any functions execute
+initializeDbConnection();
+
 app.get('/', (req, res) => {
-  res.send('Hello Express app!')
+  res.send('NFTube API');
 });
 
+app.use("/videos", videosRouter)
+
+//DO NOT MOVE, needs to be at the end to catch all routes that are not being handled by server
+app.use(routeNotFound);
+
 app.listen(3000, () => {
-  console.log('server started');
+	console.log('server started');
 });
