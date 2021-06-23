@@ -9,7 +9,9 @@ app.use(cors());
 
 const { initializeDbConnection } = require('./database/initializeDbConnection');
 const { routeNotFound } = require('./middlewares/routeNotFound');
-const videosRouter = require("./routers/videos.router")
+const loginRouter = require("./routers/login.router");
+const videoRouter = require("./routers/video.router");
+const playlistRouter = require("./routers/playlist.router");
 
 //DO NOT MOVE, needs to be at top to establish connection before any functions execute
 initializeDbConnection();
@@ -18,7 +20,9 @@ app.get('/', (req, res) => {
   res.send('NFTube API');
 });
 
-app.use("/videos", videosRouter)
+app.use("/login", loginRouter)
+app.use("/video", videoRouter)
+app.use("/playlist", playlistRouter)
 
 //DO NOT MOVE, needs to be at the end to catch all routes that are not being handled by server
 app.use(routeNotFound);
