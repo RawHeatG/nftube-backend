@@ -10,6 +10,7 @@ app.use(cors());
 const { initializeDbConnection } = require('./database/initializeDbConnection');
 const { routeNotFound } = require('./middlewares/routeNotFound');
 const loginRouter = require("./routers/login.router");
+const signupRouter = require("./routers/signup.router");
 const videoRouter = require("./routers/video.router");
 const playlistRouter = require("./routers/playlist.router");
 
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.use("/login", loginRouter)
+app.use("/signup", signupRouter)
 app.use("/video", videoRouter)
 app.use("/playlist", playlistRouter)
 
