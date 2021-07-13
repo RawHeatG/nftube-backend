@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/user.model");
+const { Playlist } = require("../models/playlist.model")
 const jwt = require("jsonwebtoken");
 const secret = require("../keys/secret");
 const bcrypt = require("bcrypt");
@@ -21,7 +22,16 @@ router.route("/")
         console.log(NewUser)
         const savedUser = await NewUser.save();
         console.log(savedUser);
-        res.status(200).json({success: true, data:{name: name, username: username, userId: savedUser._id, token: token}});
+
+        //default playlists of user
+        const Liked = new Playlist({user: savedUser._id, id: "liked", name: "Liked Videos"})
+        await Liked.save();
+        const WatchLater = new Playlist({user: savedUser._id, id: "watchLater", name: "Watch Later"})
+        await WatchLater.save();
+        const History = new Playlist({user: savedUser._id, id: "history", name: "History"})
+        await History.save();
+
+        res.status(200).json({success: true, data:{name: name, username: username, userId: savedUser._id}, token: token});
     }catch(err){
         console.log(err)
         res.status(500).json({success: false, data:{error: err}});

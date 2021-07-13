@@ -7,7 +7,6 @@ router.route("/")
 .get(async (req,res) => {
     try{
         const videos = await Video.find({});
-        console.log(videos);
         res.status(200).json({success: true, data: videos})
     }catch(err){
         catchHandler({err})

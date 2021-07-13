@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const { initializeDbConnection } = require('./database/initializeDbConnection');
+const { privateRoute } = require("./middlewares/privateRoute");
 const { routeNotFound } = require('./middlewares/routeNotFound');
 const loginRouter = require("./routers/login.router");
 const signupRouter = require("./routers/signup.router");
@@ -24,6 +25,9 @@ app.get('/', (req, res) => {
 app.use("/login", loginRouter)
 app.use("/signup", signupRouter)
 app.use("/video", videoRouter)
+
+//DO NOT MOVE, the routes below needs to be protected
+// app.use(privateRoute);
 app.use("/playlist", playlistRouter)
 
 //DO NOT MOVE, needs to be at the end to catch all routes that are not being handled by server

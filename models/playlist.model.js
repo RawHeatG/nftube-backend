@@ -8,8 +8,11 @@ const PlaylistSchema = new Schema({
   },
   name: {
     type: String,
-    unique: [true, "Playlist with this name already exists"],
     required: [true, "Name is required"]
+  },
+  id: { 
+    type: String,
+    required: [true, "Id is required"]
   },
   videos: [{
     type: Schema.Types.ObjectId,

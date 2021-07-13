@@ -6,10 +6,12 @@ router.route('/:userId')
     .get(async (req, res) => {
         try {
             const { userId } = req.params;
-            const playlists = await Playlist.find({ user: { _id: userId } });
-            res.json({ success: true, data: playlists });
+            const playlists = await Playlist.find({ user: { _id: userId } }).populate("videos");
+            console.log(playlists)
+            res.status(200).json({ success: true, data: playlists });
         }catch(err) {
-            res.json({ success: false, error: err })
+            console.log(err)
+            res.status(500).json({ success: false, error: err })
         }
     })
     .post(async (req, res) => {
@@ -17,27 +19,35 @@ router.route('/:userId')
             const { userId } = req.params;
             const playlist = new Playlist({ ...req.body, user: userId })
             await playlist.save();
-            res.staus(200).json({ success: true, data: playlist })
+            res.status(200).json({ success: true, data: playlist })
         }catch(err) {
-            res.staus(500).json({ success: false, error: err })
+            res.status(500).json({ success: false, error: err })
         }
     });
 
-router.route('/:playlistId')
+
+
+router.route('/:userId/:playlistId')
     .get(async (req, res) => {
         try {
-        const { playlistId } = req.params;
-        const playlist = await Playlist.find({ _id: playlistId });
-        res.json({ success: true, data: playlist });
+        const { userId, playlistId } = req.params;
+        console.log(userId, playlistId)
+        const playlist = await Playlist.findOne({ user: userId, id: playlistId }).populate("videos");
+        console.log(playlist)
+        res.status(200).json({ success: true, data: playlist });
         }catch(err) {
-        res.json({ success: false, error: err })
+        res.status(500).json({ success: false, error: err })
         }
     })
     .post(async (req, res) => {
-        const { playlistId } = req.params;
-        const { videoId } = req.body;
+        const { userId, playlistId } = req.params;
+        const { _id: videoId } = req.body;
+        console.log(playlistId)
+        console.log(req.body)
+        console.log({videoId})
         try {
-            const playlist = await Playlist.findOne({ _id: playlistId });
+            const playlist = await Playlist.findOne({ user: userId, id: playlistId });
+            console.log(playlist)
             const isVideoInPlaylist = playlist.videos.includes(videoId);
 
             isVideoInPlaylist ?
@@ -46,21 +56,35 @@ router.route('/:playlistId')
                 playlist.videos.push(videoId);
 
             const savedPlaylist = await playlist.save();
-            res.json({ success: true, data: savedPlaylist })
+            res.status(200).json({ success: true, data: savedPlaylist })
         }catch(err) {
         console.log(error);
-        res.json({ success: false, err: error })
+        res.status(500).json({ success: false, err: error })
     }
   })
     .delete(async (req, res) => {
         try {
             const { playlistId } = req.params;
             await Playlist.findByIdAndRemove({ _id: playlistId })
-            res.json({ success: true })
+            res.status(200).json({ success: true })
         }catch(err) {
-            res.json({success: false, error: err })
+            res.status(500).json({success: false, error: err })
         }
     })
+router.route('/:userId/:playlistId/:videoId')
+    .get(async (req,res) => {
+        try{
+            console.log(req.params, "Hi Iam here")
+            const { userId, playlistId, videoId } = req.params;
+            const playlist = await Playlist.findOne({ user: userId, id: playlistId });
+            const isVideoInPlaylist = playlist.videos.includes(videoId);
+            console.log(isVideoInPlaylist)
+            res.status(200).json({ success: true, data: isVideoInPlaylist})
+        }catch(err){
+            res.status(500).json({success: false, error: err })
+        }
+    })
+
   
 
 module.exports = router;
